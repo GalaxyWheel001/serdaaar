@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Özel Finansal Sistem: Gizli Algoritma</title>
+
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+
+        // Initialize multiple pixels
+        fbq('init', '800992999335430');
+        fbq('init', '844842071400032');
+        fbq('init', '1018424463772019');
+
+        fbq('track', 'PageView');
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=800992999335430&ev=PageView&noscript=1" />
+        <img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=844842071400032&ev=PageView&noscript=1" />
+        <img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=1018424463772019&ev=PageView&noscript=1" />
+    </noscript>
+    <!-- End Meta Pixel Code -->
+
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Styling for visual appeal and mobile readiness */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900;800&display=swap');
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0d;
+            /* Very dark background */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .quiz-container {
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+            background: #1c1c1c;
+            /* Dark card */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            .quiz-container {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+
+        @media (min-width: 481px) and (max-width: 768px) {
+            .quiz-container {
+                max-width: 90%;
+                margin: 1rem auto;
+                border-radius: 1rem;
+            }
+        }
+
+        .question-card {
+            min-height: 200px;
+            /* Reduced for mobile */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @media (max-width: 480px) {
+            .question-card {
+                min-height: 150px;
+            }
+        }
+
+        .answer-button {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 2px solid #FFD700;
+            /* Gold border */
+            color: #FFD700;
+            background-color: #333;
+            font-weight: 700;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(255, 215, 0, 0.2);
+            min-height: 56px;
+            /* Minimum touch target size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .answer-button:hover,
+        .answer-button:active {
+            background-color: #FFD700;
+            color: #1c1c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        @media (max-width: 480px) {
+            .answer-button {
+                font-size: 0.95rem;
+                padding: 1rem 0.75rem;
+                min-height: 52px;
+            }
+        }
+
+        .back-button,
+        .retry-button {
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #777;
+            color: #aaa;
+            background-color: #2a2a2a;
+            touch-action: manipulation;
+            min-height: 44px;
+        }
+
+        .back-button:hover,
+        .back-button:active,
+        .retry-button:hover,
+        .retry-button:active {
+            background-color: #444;
+            color: #fff;
+        }
+
+        .retry-button {
+            border-color: #10B981;
+            /* Green for retry */
+            color: #10B981;
+            font-weight: 700;
+        }
+
+        .retry-button:hover,
+        .retry-button:active {
+            background-color: #10B981;
+            color: #1c1c1c;
+        }
+
+        .loader {
+            border-top-color: #FFD700;
+            -webkit-animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Mobile typography adjustments */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem !important;
+                line-height: 1.3 !important;
+            }
+
+            h2 {
+                font-size: 1.25rem !important;
+                line-height: 1.3 !important;
+            }
+
+            .text-3xl {
+                font-size: 1.5rem !important;
+            }
+
+            .text-2xl {
+                font-size: 1.25rem !important;
+            }
+
+            .text-xl {
+                font-size: 1.125rem !important;
+            }
+
+            .text-lg {
+                font-size: 1rem !important;
+            }
+        }
+
+        /* Mobile spacing adjustments */
+        @media (max-width: 480px) {
+            .quiz-container {
+                padding: 1rem !important;
+            }
+
+            .mb-6 {
+                margin-bottom: 1rem !important;
+            }
+
+            .mb-8 {
+                margin-bottom: 1.5rem !important;
+            }
+
+            .mb-4 {
+                margin-bottom: 1rem !important;
+            }
+
+            .space-y-4>*+* {
+                margin-top: 0.75rem !important;
+            }
+        }
+
+        /* Authority section mobile optimization */
+        @media (max-width: 480px) {
+            .authority-section {
+                flex-direction: column;
+                text-align: center;
+                padding-bottom: 0.75rem !important;
+            }
+
+            .authority-section svg {
+                margin-right: 0 !important;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Scarcity message mobile optimization */
+        @media (max-width: 480px) {
+            #scarcityMessage {
+                padding: 0.75rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            #countdown {
+                font-size: 1rem !important;
+            }
+        }
+
+        /* Button text wrapping */
+        .answer-button,
+        .back-button,
+        .retry-button {
+            word-wrap: break-word;
+            white-space: normal;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* Safe area for notched devices */
+        @supports (padding: max(0px)) {
+            .quiz-container {
+                padding-left: max(1rem, env(safe-area-inset-left));
+                padding-right: max(1rem, env(safe-area-inset-right));
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-[#d7e2c6] min-h-screen flex items-center justify-center p-6 md:p-8 font-sans antialiased relative overflow-hidden">
+
+    <!-- Telegram Doodle Background Pattern -->
+    <div class="absolute inset-0 pointer-events-none"
+        style="background-color: #d7e2c6; background-image: url('https://raw.githubusercontent.com/telegramdesktop/tdesktop/master/Telegram/Resources/art/bg_initial.jpg'); background-size: cover; background-position: center; opacity: 0.8;">
+    </div>
+    <!-- Fallback Overlay for texture -->
+    <div class="absolute inset-0 opacity-30 pointer-events-none"
+        style="background-image: radial-gradient(#798968 1px, transparent 1px); background-size: 32px 32px;">
+    </div>
+
+    <!-- Main Card -->
+    <div
+        class="bg-white rounded-[32px] shadow-2xl w-full max-w-[400px] p-8 flex flex-col items-center text-center relative z-10 mx-auto transform transition-all scale-90 translate-y-4 hover:scale-[0.92] duration-500">
+
+        <!-- Avatar Container -->
+        <div class="relative mb-5 group">
+            <div
+                class="w-[120px] h-[120px] rounded-full overflow-hidden shadow-lg border-4 border-white ring-2 ring-gray-100">
+                <img src="./avatar.jpg" alt="Serdar Sancak"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+            </div>
+            <!-- Online Status Dot -->
+            <div class="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full shadow-sm"
+                title="Online"></div>
+        </div>
+
+        <!-- Name & Verified Badge -->
+        <div class="flex items-center justify-center gap-1.5 mb-1">
+            <h1 class="text-[24px] font-bold text-[#1c1c1c] leading-tight tracking-tight">
+                Serdar Sancak
+            </h1>
+            <!-- Verified Badge (Blue Check) -->
+            <svg class="w-6 h-6 text-[#3390ec] fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M12.0002 2.00024L14.5602 3.06024L17.1202 2.53024L18.6602 4.58024L21.2202 5.64024L21.2202 8.20024L23.2702 10.2502L22.7402 12.8102L23.2702 15.3702L21.2202 17.4202L21.2202 19.9802L18.6602 21.0402L17.1202 23.0902L14.5602 22.5602L12.0002 23.6202L9.44024 22.5602L6.88024 23.0902L5.34024 21.0402L2.78024 19.9802L2.78024 17.4202L0.730244 15.3702L1.26024 12.8102L0.730244 10.2502L2.78024 8.20024L2.78024 5.64024L5.34024 4.58024L6.88024 2.53024L9.44024 3.06024L12.0002 2.00024ZM10.9402 16.3402L17.5402 9.74024L16.1202 8.32024L10.9402 13.5102L7.88024 10.4502L6.46024 11.8702L10.9402 16.3402Z" />
+            </svg>
+        </div>
+
+        <!-- Subscriber Count -->
+        <p class="text-[#707579] text-[14px] font-medium mb-6 tracking-wide">
+            17 464 subscribers
+        </p>
+
+        <!-- Description -->
+        <div class="text-[#1c1c1c] text-[15px] leading-relaxed mb-8 px-1 font-normal text-left">
+            <p>Artık yüzlerle kişi bu sistemden yararlanarak tüm borçlarını kapattı ve zengin bir hayata başladı. Sen de
+                sadece bu butona tıklayarak bu kervana katıla bilirsin.</p>
+        </div>
+
+        <!-- View in Telegram Button -->
+        <a href="tg://resolve?domain=Serdarresmibot&start=link_gpONqzemoO"
+            class="w-full block bg-[#3390ec] hover:bg-[#2884df] active:bg-[#1d78d5] text-white font-bold py-4 px-6 rounded-xl text-[15px] uppercase tracking-wider transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-0.5 mb-4 relative overflow-hidden group">
+            <span class="relative z-10 flex items-center justify-center">
+                VIEW IN TELEGRAM
+            </span>
+            <!-- Button Shine Effect -->
+            <div
+                class="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0">
+            </div>
+        </a>
+
+        <!-- Fallback Link -->
+        <a href="https://t.me/Serdarresmibot?start=link_gpONqzemoO" target="_blank" rel="noopener"
+            class="text-[#707579] hover:text-[#3390ec] text-xs font-medium transition-colors py-2">
+            Open in Web
+        </a>
+
+    </div>
+
+    <style>
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <script>
+        // Simple pixel tracking for page view
+        if (typeof fbq === 'function') {
+            fbq('track', 'ViewContent', {
+                content_name: 'TelegramLanding_Polished'
+            });
+        }
+    </script>
+</body>
